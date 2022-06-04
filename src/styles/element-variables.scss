@@ -1,0 +1,34 @@
+/* theme color */
+$--color-primary: #409eff;
+$--color-success: #67c23a;
+$--color-warning: #e6a23c;
+$--color-danger: #f56c6c;
+$--color-error: #f56c6c;
+$--color-info: #909399;
+
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+
+  $colors: (
+    'primary': (
+      'base': $--color-primary,
+    ),
+    'success': (
+      'base': $--color-success,
+    ),
+    'warning': (
+      'base': $--color-warning,
+    ),
+    'danger': (
+      'base': $--color-danger,
+    ),
+    'error': (
+      'base': $--color-error,
+    ),
+    'info': (
+      'base': $--color-info,
+    ),
+  ),
+);
+
+
+@use "element-plus/theme-chalk/src/index.scss" as *;
