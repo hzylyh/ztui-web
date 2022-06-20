@@ -1,45 +1,15 @@
 <template>
-  <!--  <div>{{ a }}</div>-->
-  <!--  <ElButton @click="handleClick">ddd</ElButton>-->
-  <!--  <DtTable :table-data="tableData"></DtTable>-->
-  <!--  <Button type="primary" round @click="handleClick" size="small" ref="btRef">ggg</Button>-->
-  <div>
-    <ElButton @click="test('y')">ddd</ElButton>
-    <ElTable>
-      <ElTableColumn label="用例编号">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span style="margin-left: 10px">{{ scope.row.date }}</span>
-          </div>
-        </template>
-      </ElTableColumn>
-      <ElTableColumn label="用例名称">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span style="margin-left: 10px">{{ scope.row.date }}</span>
-          </div>
-        </template>
-      </ElTableColumn>
-      <ElTableColumn label="用例模块">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span style="margin-left: 10px">{{ scope.row.date }}</span>
-          </div>
-        </template>
-      </ElTableColumn>
-      <ElTableColumn label="结果">
-        <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit
-          </el-button>
-          <el-button
-              size="small"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)">Delete
-          </el-button>
-        </template>
-      </ElTableColumn>
-    </ElTable>
+  <div class="wrapper">
+    <div class="panel">
+      <div v-for="(item, index) in 4" class="card-container">
+        <ElCard shadow="hover"
+                class="card">
+        </ElCard>
+      </div>
+    </div>
+    <div class="table-container">dd</div>
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -100,5 +70,29 @@ function handleClick() {
 </script>
 
 <style lang="scss" scoped>
+.wrapper {
+  height: 100%;
+  .panel {
+    height: 150px;
+    display: flex;
+    flex-wrap: wrap;
+    .card-container {
+      height: 100%;
+      max-width: 25%;
+      flex: 0 0 25%;
+      //padding-left: 10px;
+      //padding-right: 10px;
+      .card {
+        //width: 100%;
+        margin-left: 5px;
+        margin-right: 5px;
+        height: 100%;
+      }
+    }
+  }
+  .table-container {
+    height: calc(100% - 150px);
+  }
+}
 
 </style>

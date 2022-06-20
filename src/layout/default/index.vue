@@ -80,7 +80,7 @@ $height: 64px;
   }
 
   .main {
-    height: 100%;
+    height: calc(100% - #{$height});
     .nav-bar {
       //min-width: 150px;
       .menu {

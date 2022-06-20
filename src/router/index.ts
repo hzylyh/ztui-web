@@ -1,5 +1,6 @@
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router';
 import Layout from '@/layout/default/index.vue'
+import WithoutNav from '@/layout/without-nav/index.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -17,6 +18,19 @@ const routes: RouteRecordRaw[] = [
         path: '/caseManage',
         name: 'CaseManage',
         component: () => import('@/views/case-manage/case-manage.vue'),
+      }
+    ]
+  },
+  {
+    path: '/withoutNav',
+    name: 'WithoutNav',
+    redirect: '/dashboard',
+    component: WithoutNav,
+    children: [
+      {
+        path: '/projectManage',
+        name: 'ProjectManage',
+        component: () => import('@/views/project-manage/project-manage.vue'),
       }
     ]
   }

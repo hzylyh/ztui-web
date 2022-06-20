@@ -2,7 +2,19 @@ export interface GetResultReq {
 
 }
 
+export interface CaseInfo {
+
+}
+
 export interface CaseListReq {
+
+}
+
+export interface ProjectListReq {
+
+}
+
+export interface ProjectInfo {
 
 }
 
