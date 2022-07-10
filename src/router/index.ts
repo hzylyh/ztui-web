@@ -6,7 +6,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Home',
-    redirect: '/dashboard',
+    redirect: '/projectManage',
     component: Layout,
     children: [
       {
@@ -24,7 +24,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/withoutNav',
     name: 'WithoutNav',
-    redirect: '/dashboard',
+    redirect: '/projectManage',
     component: WithoutNav,
     children: [
       {

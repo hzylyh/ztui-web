@@ -7,7 +7,54 @@
         </ElCard>
       </div>
     </div>
-    <div class="table-container">dd</div>
+    <div class="table-container">
+      <ElTable :data="tableData">
+        <ElTableColumn label="用例编号">
+          <template #default="scope">
+            <div style="display: flex; align-items: center">
+              <span style="margin-left: 10px">{{ scope.row.case_id }}</span>
+            </div>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn label="用例名称">
+          <template #default="scope">
+            <div style="display: flex; align-items: center">
+              <span style="margin-left: 10px">{{ scope.row.case_name }}</span>
+            </div>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn label="用例模块">
+          <template #default="scope">
+            <div style="display: flex; align-items: center">
+              <span style="margin-left: 10px">{{ scope.row.module_name }}</span>
+            </div>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn label="步骤">
+          <template #default="scope">
+            <div style="display: flex; align-items: center">
+              <span style="margin-left: 10px">{{ scope.row.step }}</span>
+            </div>
+          </template>
+        </ElTableColumn>
+<!--        <ElTableColumn label="输入">-->
+<!--          <template #default="scope">-->
+<!--            <div style="display: flex; align-items: center">-->
+<!--              <span style="margin-left: 10px">{{ scope.row.input_value }}</span>-->
+<!--            </div>-->
+<!--          </template>-->
+<!--        </ElTableColumn>-->
+        <ElTableColumn label="执行结果">
+          <template #default="scope">
+            <div style="display: flex; align-items: center">
+              <el-tag class="ml-2" :type="scope.row.result === '0' ? 'success' : 'danger'">
+                {{ scope.row.result === '0' ? '成功' : '失败' }}
+              </el-tag>
+            </div>
+          </template>
+        </ElTableColumn>
+      </ElTable>
+    </div>
   </div>
 
 </template>
@@ -15,19 +62,14 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import type {Ref} from "vue";
-import {getResult} from "@/api/dashboard";
-import {GetResultReq} from "@/api/model";
+import {CaseResultReq, CaseResultRes, GetResultReq} from "@/api/model";
+import {getCaseResult} from "@/api/case-manage";
 
 
 const btRef = ref('')
 
-interface TData {
-  date: string,
-  name: string,
-  address?: string
-}
 
-const tableData: Array<TData | string> = new Array<TData | string>()
+const tableData: Ref<CaseResultRes[]> = ref([])
 
 //yi
 let c: Ref<number>
@@ -39,12 +81,12 @@ onMounted(() => {
 })
 
 function initData() {
-  const reqInfo: GetResultReq = {
+  const reqInfo: CaseResultReq = {
 
   }
-  // getResult(reqInfo).then(response: TData => {
-  //   console.log(response)
-  // })
+  getCaseResult(reqInfo).then(response => {
+    tableData.value = response.result
+  })
 }
 
 function test(arr: Array<Array<number>>, type: string): Array<number> {
@@ -91,6 +133,7 @@ function handleClick() {
     }
   }
   .table-container {
+    margin: 10px 5px;
     height: calc(100% - 150px);
   }
 }
