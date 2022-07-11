@@ -393,7 +393,8 @@ $common-bg-color: #fff;
       .po-table {
         background: $common-bg-color;
         .action {
-
+          text-align: right;
+          padding: 5px
         }
       }
     }

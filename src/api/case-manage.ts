@@ -1,8 +1,8 @@
 import http from '@/utils/http'
-import {CaseInfo, CaseInfoRes, CaseListReq, CaseResultReq, CaseResultRes, ProjectInfo} from "@/api/model";
+import {AddCaseReq, CaseInfo, CaseListReq, CaseResultReq, DeleteCaseReq} from "@/api/model";
 import {BaseResPromise} from "@/types/http";
 
-export function addCase(params: CaseInfo): BaseResPromise<CaseInfoRes[]> {
+export function addCase(params: AddCaseReq): BaseResPromise<CaseInfo[]> {
   return http.request({
     url: '/caseManage/add',
     method: 'post',
@@ -10,7 +10,15 @@ export function addCase(params: CaseInfo): BaseResPromise<CaseInfoRes[]> {
   })
 }
 
-export function getCaseList(params: CaseListReq): BaseResPromise<CaseInfoRes[]> {
+export function deleteCase(params: DeleteCaseReq): BaseResPromise<CaseInfo[]> {
+  return http.request({
+    url: '/caseManage/delete',
+    method: 'post',
+    data: params
+  })
+}
+
+export function getCaseList(params: CaseListReq): BaseResPromise<CaseInfo[]> {
   return http.request({
     url: '/caseManage/getCaseList',
     method: 'post',
@@ -18,7 +26,7 @@ export function getCaseList(params: CaseListReq): BaseResPromise<CaseInfoRes[]> 
   })
 }
 
-export function getCaseResult(params: CaseResultReq): BaseResPromise<ProjectInfo[]> {
+export function getCaseResult(params: CaseResultReq): BaseResPromise<CaseInfo[]> {
   return http.request({
     url: '/caseManage/getCaseResult',
     method: 'post',

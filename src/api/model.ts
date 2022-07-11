@@ -70,15 +70,21 @@ export interface ListPOReq {
 }
 
 
-export interface CaseInfoRes {
-  caseId: string
-  caseName: string
-  module: string
+export interface CaseInfo {
+  case_id: string
+  case_name: string
+  module_name: string
   step: string
   po: string
-  poAttr: string
-  inputValue: string
-  expectValue: string
+  po_attr: string
+  input_value: string
+  expect_value: string
+}
+
+export type AddCaseReq = CaseInfo
+
+export interface DeleteCaseReq {
+  case_id: string
 }
 
 export interface POTree {

@@ -10,7 +10,6 @@
 import {
   AddPageReq, AddPOReq,
   AddProjectForm,
-  CaseInfoRes,
   DeletePageReq, DeletePOReq,
   DeleteProjectForm,
   GetPageReq, ListPOReq,
@@ -20,7 +19,7 @@ import {BaseResPromise} from "@/types/http";
 import http from "@/utils/http";
 
 // 新增PO接口
-export function addPageObject(params: AddPOReq): BaseResPromise<CaseInfoRes[]> {
+export function addPageObject(params: AddPOReq): BaseResPromise<PageInfo[]> {
   return http.request({
     url: '/pageObjectManage/add',
     method: 'post',
@@ -29,7 +28,7 @@ export function addPageObject(params: AddPOReq): BaseResPromise<CaseInfoRes[]> {
 }
 
 // 删除页面接口
-export function deletePageObject(params: DeletePOReq): BaseResPromise<CaseInfoRes[]> {
+export function deletePageObject(params: DeletePOReq): BaseResPromise<PageInfo[]> {
   return http.request({
     url: '/pageObjectManage/delete',
     method: 'post',
