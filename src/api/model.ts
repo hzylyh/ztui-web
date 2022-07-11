@@ -53,6 +53,22 @@ export interface GetPageReq {
   project_id: string | null
 }
 
+export interface PageObjectInfo {
+  po_id: string | null
+  po_name?: string
+  locate_type?: string
+  locate_value?: string
+  action?: string
+  page_id: string | null
+}
+
+export type AddPOReq = PageObjectInfo
+export type DeletePOReq = PageObjectInfo
+
+export interface ListPOReq {
+  page_id: string
+}
+
 
 export interface CaseInfoRes {
   caseId: string

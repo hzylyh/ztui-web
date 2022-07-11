@@ -39,7 +39,65 @@
       </ElCol>
 
       <ElCol :span="19" class="po-content">
-        table
+        <div class="handle-bar">
+
+        </div>
+        <div class="po-table">
+          <div class="action">
+            <ElButton type="primary"
+                      @click="handleAddPO">新增</ElButton>
+          </div>
+          <div class="table">
+            <ElTable :data="tableData">
+<!--              <ElTableColumn label="对象ID">-->
+<!--                <template #default="scope">-->
+<!--                  <div style="display: flex; align-items: center">-->
+<!--                    <span style="margin-left: 10px">{{ scope.row.po_id }}</span>-->
+<!--                  </div>-->
+<!--                </template>-->
+<!--              </ElTableColumn>-->
+              <ElTableColumn label="对象名称">
+                <template #default="scope">
+                  <div style="display: flex; align-items: center">
+                    <span style="margin-left: 10px">{{ scope.row.po_name }}</span>
+                  </div>
+                </template>
+              </ElTableColumn>
+              <ElTableColumn label="定位方式">
+                <template #default="scope">
+                  <div style="display: flex; align-items: center">
+                    <span style="margin-left: 10px">{{ scope.row.locate_type }}</span>
+                  </div>
+                </template>
+              </ElTableColumn>
+              <ElTableColumn label="值">
+                <template #default="scope">
+                  <div style="display: flex; align-items: center">
+                    <span style="margin-left: 10px">{{ scope.row.locate_value }}</span>
+                  </div>
+                </template>
+              </ElTableColumn>
+              <ElTableColumn label="动作">
+                <template #default="scope">
+                  <div style="display: flex; align-items: center">
+                    <span style="margin-left: 10px">{{ scope.row.action }}</span>
+                  </div>
+                </template>
+              </ElTableColumn>
+              <ElTableColumn label="操作">
+                <template #default="scope">
+                  <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑
+                  </el-button>
+                  <el-button
+                      size="small"
+                      type="danger"
+                      @click="handleDeletePO(scope.row)">删除
+                  </el-button>
+                </template>
+              </ElTableColumn>
+            </ElTable>
+          </div>
+        </div>
       </ElCol>
     </ElRow>
   </div>
@@ -57,10 +115,6 @@
           <el-input v-model="addPageForm.page_name"
                     placeholder="请输入项目名称" />
         </el-form-item>
-<!--        <el-form-item label="项目描述">-->
-<!--          <el-input v-model="addPageForm.project_desc"-->
-<!--                    placeholder="请输入项目描述" />-->
-<!--        </el-form-item>-->
       </ElForm>
       <template #footer>
           <span class="dialog-footer">
@@ -71,26 +125,83 @@
       </template>
     </ElDialog>
   </div>
+
+  <!--    新增PO dialog-->
+  <div class="add-dialog">
+    <ElDialog v-model="addPODialogVisible"
+              title="新增页面"
+              width="30%">
+      <ElForm :label-position="labelPosition"
+              label-width="100px"
+              :model="addPageObjectForm">
+        <el-form-item label="对象名称">
+          <el-input v-model="addPageObjectForm.po_name"
+                    placeholder="请输入页面对象名称" />
+        </el-form-item>
+        <el-form-item label="定位方式">
+          <el-input v-model="addPageObjectForm.locate_type"
+                    placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="定位值">
+          <el-input v-model="addPageObjectForm.locate_value"
+                    placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="操作">
+          <el-input v-model="addPageObjectForm.action"
+                    placeholder="请输入" />
+        </el-form-item>
+      </ElForm>
+      <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="addPODialogVisible = false">取消</el-button>
+            <el-button type="primary"
+                       @click="handleAddPOAction">确认</el-button>
+          </span>
+      </template>
+    </ElDialog>
+  </div>
 </template>
 
 <script setup lang="ts">
 
-import {AddPageReq, DeletePageReq, DetailProjectReq, GetPageReq, POTree} from "@/api/model";
+import {
+  AddPageReq,
+  AddPOReq,
+  DeletePageReq, DeletePOReq,
+  DetailProjectReq,
+  GetPageReq,
+  ListPOReq,
+  PageObjectInfo,
+  POTree
+} from "@/api/model";
 import {onMounted, Ref, ref} from "vue";
 import {addPage, deletePage, getPageList} from "@/api/page-manage";
 import {getProjectDetail} from "@/api/project-manage";
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import {ElMessage, ElMessageBox} from "element-plus";
 import {nanoid} from "nanoid";
+import {addPageObject, deletePageObject, getPageObjectList} from "@/api/page-object-manage";
 
 let data: Ref<POTree[]> = ref([])
 let addDialogVisible = ref(false)
+let addPODialogVisible = ref(false)
 let labelPosition = ref('right')
+let currNode: POTree
+let tableData: Ref<PageObjectInfo[]> = ref([])
 
 let addPageForm: Ref<AddPageReq> = ref({
   page_id: '',
   page_name: '',
   project_id: ''
+})
+
+let addPageObjectForm: Ref<AddPOReq> = ref({
+  po_id: '',
+  po_name: '',
+  locate_type: '',
+  locate_value: '',
+  action: '',
+  page_id: '',
 })
 
 const defaultProps = {
@@ -102,8 +213,11 @@ onMounted(() => {
   queryPageList()
 })
 
-function handleNodeClick () {
-
+function handleNodeClick (data: POTree) {
+  currNode = data
+  if (data.id != null) {
+    queryPageObjectList(data.id)
+  }
 }
 
 // 获取项目信息
@@ -157,6 +271,30 @@ function handleAddPageAction () {
   })
 }
 
+//
+function handleAddPO() {
+  addPODialogVisible.value = true
+}
+
+function handleAddPOAction() {
+  addPageObjectForm.value.page_id = currNode.id
+  addPageObjectForm.value.po_id = nanoid()
+  addPageObject(addPageObjectForm.value).then(_ => {
+    addPODialogVisible.value = false
+    queryProjectList()
+  })
+}
+
+function queryPageObjectList(pageId: string) {
+  const listReq: ListPOReq = {
+    page_id: pageId
+  }
+  getPageObjectList(listReq).then(res => {
+    console.log(res)
+    tableData.value = res.result
+  })
+}
+
 // 删除页面
 function handleRemoveNode (node: Node, data: POTree) {
   const deleteReq: DeletePageReq = {
@@ -175,6 +313,39 @@ function handleRemoveNode (node: Node, data: POTree) {
       .then(() => {
         deletePage(deleteReq).then(_ => {
           queryPageList()
+          ElMessage({
+            type: 'success',
+            message: '删除成功',
+          })
+        })
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: '删除失败',
+        })
+      })
+}
+
+function handleDeletePO(row: PageObjectInfo) {
+  const deleteReq: DeletePOReq = {
+    po_id: row.po_id,
+    page_id: currNode.id
+  }
+  ElMessageBox.confirm(
+      '您将删除此页面对象，是否继续？',
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        deletePageObject(deleteReq).then(_ => {
+          if (currNode.id != null) {
+            queryPageObjectList(currNode.id)
+          }
           ElMessage({
             type: 'success',
             message: '删除成功',
@@ -214,6 +385,17 @@ $common-bg-color: #fff;
     }
     .po-content {
       height: 100%;
+      //background: $common-bg-color;
+      .handle-bar {
+        background: $common-bg-color;
+      }
+
+      .po-table {
+        background: $common-bg-color;
+        .action {
+
+        }
+      }
     }
   }
 
