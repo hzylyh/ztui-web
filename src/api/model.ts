@@ -1,3 +1,5 @@
+import exp from "constants";
+
 export interface GetResultReq {
 
 }
@@ -26,7 +28,7 @@ export interface ProjectListReq {
 }
 
 export interface ProjectInfo {
-  project_id: string
+  project_id: string | null
   project_name?: string
   project_desc?: string
   create_time?: string
@@ -35,6 +37,22 @@ export interface ProjectInfo {
 
 export type AddProjectForm = ProjectInfo
 export type DeleteProjectForm = ProjectInfo
+export type DetailProjectReq = ProjectInfo
+
+export interface PageInfo {
+  page_id: string | null
+  page_name?: string
+  project_id: string | null
+}
+
+export type AddPageReq = PageInfo
+
+export type DeletePageReq = PageInfo
+
+export interface GetPageReq {
+  project_id: string | null
+}
+
 
 export interface CaseInfoRes {
   caseId: string
@@ -45,4 +63,11 @@ export interface CaseInfoRes {
   poAttr: string
   inputValue: string
   expectValue: string
+}
+
+export interface POTree {
+  root?: boolean
+  label: string | null | undefined
+  id: string | null
+  children?: POTree[]
 }

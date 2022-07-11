@@ -47,6 +47,17 @@
             <el-icon><document /></el-icon>
             <span>用例管理</span>
           </el-menu-item>
+          <el-menu-item index="4"
+                        :route="{ name: 'POManage' }">
+            <el-icon><document /></el-icon>
+            <span>页面对象管理</span>
+          </el-menu-item>
+
+          <el-menu-item index="5"
+                        :route="{ name: 'DriverManage' }">
+            <el-icon><document /></el-icon>
+            <span>驱动管理</span>
+          </el-menu-item>
 <!--          <el-menu-item index="4">-->
 <!--            <el-icon><setting /></el-icon>-->
 <!--            <span>Navigator Four</span>-->

@@ -64,10 +64,10 @@ import {onMounted, ref} from "vue";
 import type {Ref} from "vue";
 import {CaseResultReq, CaseResultRes, GetResultReq} from "@/api/model";
 import {getCaseResult} from "@/api/case-manage";
-
+import {useRouter} from "vue-router";
 
 const btRef = ref('')
-
+const router = useRouter()
 
 const tableData: Ref<CaseResultRes[]> = ref([])
 

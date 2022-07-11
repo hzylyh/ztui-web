@@ -137,8 +137,9 @@ function handleDelProject(projectId: string) {
 }
 
 // 进入项目
-function handleEnterProject(projectId: number) {
+function handleEnterProject(projectId: string) {
   router.push({ name: 'Dashboard', query: { projectId: projectId } })
+  localStorage.setItem('projectId', projectId)
 }
 
 // 获取项目列表
