@@ -9,17 +9,13 @@
 // 新增页面接口
 import {
   AddPageReq,
-  AddProjectForm,
-  CaseInfoRes,
   DeletePageReq,
-  DeleteProjectForm,
-  GetPageReq,
   PageInfo
 } from "@/api/model";
 import {BaseResPromise} from "@/types/http";
 import http from "@/utils/http";
 
-export function addPage(params: AddPageReq): BaseResPromise<CaseInfoRes[]> {
+export function addPage(params: AddPageReq): BaseResPromise<PageInfo[]> {
   return http.request({
     url: '/pageManage/add',
     method: 'post',
@@ -28,7 +24,7 @@ export function addPage(params: AddPageReq): BaseResPromise<CaseInfoRes[]> {
 }
 
 // 删除页面接口
-export function deletePage(params: DeletePageReq): BaseResPromise<CaseInfoRes[]> {
+export function deletePage(params: DeletePageReq): BaseResPromise<PageInfo[]> {
   return http.request({
     url: '/pageManage/delete',
     method: 'post',

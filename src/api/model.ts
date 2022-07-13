@@ -9,7 +9,7 @@ export interface CaseInfo {
 }
 
 export interface CaseListReq {
-
+  project_id: string | null
 }
 
 export interface CaseResultReq {
@@ -49,7 +49,7 @@ export type AddPageReq = PageInfo
 
 export type DeletePageReq = PageInfo
 
-export interface GetPageReq {
+export interface ListPageReq {
   project_id: string | null
 }
 
@@ -75,10 +75,11 @@ export interface CaseInfo {
   case_name: string
   module_name: string
   step: string
-  po: string
-  po_attr: string
+  page_id: string
+  po_id: string
   input_value: string
   expect_value: string
+  project_id: string | null
 }
 
 export type AddCaseReq = CaseInfo

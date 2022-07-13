@@ -13,6 +13,7 @@
              class="page-tree">
         <div class="tree">
           <el-tree :data="data"
+                   default-expand-all
                    :props="defaultProps"
                    :expand-on-click-node="false"
                    @node-click="handleNodeClick" >
@@ -111,9 +112,9 @@
       <ElForm :label-position="labelPosition"
               label-width="100px"
               :model="addPageForm">
-        <el-form-item label="项目名称">
+        <el-form-item label="页面名称">
           <el-input v-model="addPageForm.page_name"
-                    placeholder="请输入项目名称" />
+                    placeholder="请输入名称" />
         </el-form-item>
       </ElForm>
       <template #footer>
@@ -282,6 +283,9 @@ function handleAddPOAction() {
   addPageObject(addPageObjectForm.value).then(_ => {
     addPODialogVisible.value = false
     queryProjectList()
+    if (currNode.id != null) {
+      queryPageObjectList(currNode.id)
+    }
   })
 }
 

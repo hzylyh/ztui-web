@@ -8,17 +8,19 @@
       <div class="action">
         <ElButton type="primary"
                   @click="handleAddCase">新增</ElButton>
+        <ElButton type="primary"
+                  @click="handleRunCase">运行</ElButton>
       </div>
 
       <div class="table">
         <ElTable :data="tableData">
-          <ElTableColumn label="用例编号">
-            <template #default="scope">
-              <div style="display: flex; align-items: center">
-                <span style="margin-left: 10px">{{ scope.row.case_id }}</span>
-              </div>
-            </template>
-          </ElTableColumn>
+<!--          <ElTableColumn label="用例编号">-->
+<!--            <template #default="scope">-->
+<!--              <div style="display: flex; align-items: center">-->
+<!--                <span style="margin-left: 10px">{{ scope.row.case_id }}</span>-->
+<!--              </div>-->
+<!--            </template>-->
+<!--          </ElTableColumn>-->
           <ElTableColumn label="用例名称">
             <template #default="scope">
               <div style="display: flex; align-items: center">
@@ -26,13 +28,13 @@
               </div>
             </template>
           </ElTableColumn>
-          <ElTableColumn label="用例模块">
-            <template #default="scope">
-              <div style="display: flex; align-items: center">
-                <span style="margin-left: 10px">{{ scope.row.module_name }}</span>
-              </div>
-            </template>
-          </ElTableColumn>
+<!--          <ElTableColumn label="用例模块">-->
+<!--            <template #default="scope">-->
+<!--              <div style="display: flex; align-items: center">-->
+<!--                <span style="margin-left: 10px">{{ scope.row.module_name }}</span>-->
+<!--              </div>-->
+<!--            </template>-->
+<!--          </ElTableColumn>-->
           <ElTableColumn label="步骤">
             <template #default="scope">
               <div style="display: flex; align-items: center">
@@ -98,16 +100,31 @@
           <el-input v-model="addCaseForm.step"
                     placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="po">
-          <el-input v-model="addCaseForm.po"
-                    placeholder="请输入" />
+        <el-form-item label="页面">
+          <el-select v-model="addCaseForm.page_id"
+                     @change="handlePageChange"
+                     placeholder="Select">
+            <el-option v-for="item in pageOptions"
+                       :key="item.page_id"
+                       :label="item.page_name"
+                       :value="item.page_id"/>
+          </el-select>
         </el-form-item>
-        <el-form-item label="po属性">
-          <el-input v-model="addCaseForm.po_attr"
-                    placeholder="请输入" />
+        <el-form-item label="页面对象">
+          <el-select v-model="addCaseForm.po_id"
+                     placeholder="Select">
+            <el-option v-for="item in poOptions"
+                       :key="item.po_id"
+                       :label="item.po_name"
+                       :value="item.po_id"/>
+          </el-select>
         </el-form-item>
-        <el-form-item label="操作">
+        <el-form-item label="输入">
           <el-input v-model="addCaseForm.input_value"
+                    placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="预期">
+          <el-input v-model="addCaseForm.expect_value"
                     placeholder="请输入" />
         </el-form-item>
       </ElForm>
@@ -125,13 +142,27 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from "vue";
 import {addCase, deleteCase, getCaseList} from '@/api/case-manage'
-import {AddCaseReq, CaseInfo, CaseListReq, DeleteCaseReq} from "@/api/model";
+import {
+  AddCaseReq,
+  CaseInfo,
+  CaseListReq,
+  DeleteCaseReq,
+  ListPageReq,
+  ListPOReq,
+  PageInfo,
+  PageObjectInfo
+} from "@/api/model";
 import {nanoid} from "nanoid";
 import {ElMessage, ElMessageBox} from "element-plus";
+import {run} from "@/api/engine";
+import {getPageList} from "@/api/page-manage";
+import {getPageObjectList} from "@/api/page-object-manage";
 
 let tableData = ref()
 let addDialogVisible = ref(false)
 let labelPosition = ref('right')
+let pageOptions: Ref<PageInfo[]> = ref([])
+let poOptions: Ref<PageObjectInfo[]> = ref([])
 
 let addCaseForm: Ref<AddCaseReq> = ref({
   case_id: "",
@@ -139,9 +170,10 @@ let addCaseForm: Ref<AddCaseReq> = ref({
   expect_value: "",
   input_value: "",
   module_name: "",
-  po: "",
-  po_attr: "",
-  step: ""
+  page_id: "",
+  po_id: "",
+  step: "",
+  project_id: ""
 })
 
 onMounted(() => {
@@ -151,17 +183,44 @@ onMounted(() => {
 // 页面初始化数据方法
 function initData() {
   queryCaseList()
+  queryPageList()
+}
+
+async function handlePageChange(pageId: string) {
+  console.log(pageId)
+  let res = await queryPageObjectList(pageId)
+  poOptions.value = res.result
 }
 
 // 获取用例列表
 function queryCaseList() {
   const reqInfo: CaseListReq = {
-
+    project_id: localStorage.getItem("projectId")
   }
   getCaseList(reqInfo).then(response => {
     tableData.value = response.result
 
   })
+}
+
+// 获取页面列表
+function queryPageList() {
+  const reqInfo: ListPageReq = {
+    project_id: localStorage.getItem("projectId")
+  }
+
+  getPageList(reqInfo).then(res => {
+    pageOptions.value = res.result
+  })
+}
+
+// 获取页面对象列表
+function queryPageObjectList(pageId: string) {
+  const reqInfo: ListPOReq = {
+    page_id: pageId
+  }
+
+  return getPageObjectList(reqInfo)
 }
 
 // 添加用例
@@ -171,6 +230,7 @@ function handleAddCase () {
 
 function handleAddCaseAction() {
   addCaseForm.value.case_id = nanoid()
+  addCaseForm.value.project_id = localStorage.getItem('projectId')
   addCase(addCaseForm.value).then(res => {
     addDialogVisible.value = false
     queryCaseList()
@@ -207,6 +267,13 @@ function handleDeleteCase(row: CaseInfo) {
         })
       })
 
+}
+
+
+function handleRunCase() {
+  run().then(res => {
+
+  })
 }
 
 
