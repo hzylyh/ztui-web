@@ -9,7 +9,7 @@
 // 新增页面接口
 import {
   AddPageReq,
-  DeletePageReq,
+  DeletePageReq, ListPageReq,
   PageInfo
 } from "@/api/model";
 import {BaseResPromise} from "@/types/http";
@@ -34,7 +34,7 @@ export function deletePage(params: DeletePageReq): BaseResPromise<PageInfo[]> {
 
 
 // 查询页面列表接口
-export function getPageList(params: GetPageReq): BaseResPromise<PageInfo[]> {
+export function getPageList(params: ListPageReq): BaseResPromise<PageInfo[]> {
   return http.request({
     url: '/pageManage/getPageList',
     method: 'post',

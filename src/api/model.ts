@@ -1,7 +1,11 @@
 import exp from "constants";
 
-export interface GetResultReq {
+export interface PanelInfo {
+  last_run_time: string
+}
 
+export interface GetPanelInfoReq {
+  project_id: string | null
 }
 
 export interface CaseInfo {

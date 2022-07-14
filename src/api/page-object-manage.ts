@@ -8,11 +8,9 @@
 
 
 import {
-  AddPageReq, AddPOReq,
-  AddProjectForm,
-  DeletePageReq, DeletePOReq,
-  DeleteProjectForm,
-  GetPageReq, ListPOReq,
+  AddPOReq,
+  DeletePOReq,
+  ListPOReq,
   PageInfo, PageObjectInfo
 } from "@/api/model";
 import {BaseResPromise} from "@/types/http";
@@ -27,7 +25,7 @@ export function addPageObject(params: AddPOReq): BaseResPromise<PageInfo[]> {
   })
 }
 
-// 删除页面接口
+// 删除页面对象接口
 export function deletePageObject(params: DeletePOReq): BaseResPromise<PageInfo[]> {
   return http.request({
     url: '/pageObjectManage/delete',
@@ -37,7 +35,7 @@ export function deletePageObject(params: DeletePOReq): BaseResPromise<PageInfo[]
 }
 
 
-// 查询页面列表接口
+// 查询页面对象列表接口
 export function getPageObjectList(params: ListPOReq): BaseResPromise<PageObjectInfo[]> {
   return http.request({
     url: '/pageObjectManage/list',

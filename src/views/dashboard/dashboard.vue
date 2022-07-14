@@ -1,9 +1,32 @@
 <template>
   <div class="wrapper">
     <div class="panel">
-      <div v-for="(item, index) in 4" class="card-container">
+      <div class="card-container">
         <ElCard shadow="hover"
                 class="card">
+          <div class="title">最近运行时间</div>
+          <div class="content">{{panelInfo.last_run_time}}</div>
+        </ElCard>
+      </div>
+      <div class="card-container">
+        <ElCard shadow="hover"
+                class="card">
+          <div class="title">用例个数</div>
+          <div class="content">{{panelInfo.case_num}}</div>
+        </ElCard>
+      </div>
+      <div class="card-container">
+        <ElCard shadow="hover"
+                class="card">
+          <div class="title">最近运行成功数</div>
+          <div class="content">{{panelInfo.success_num}}</div>
+        </ElCard>
+      </div>
+      <div class="card-container">
+        <ElCard shadow="hover"
+                class="card">
+          <div class="title">最近运行失败数</div>
+          <div class="content">{{panelInfo.fail_num}}</div>
         </ElCard>
       </div>
     </div>
@@ -62,14 +85,18 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import type {Ref} from "vue";
-import {CaseResultReq, CaseResultRes, GetResultReq} from "@/api/model";
+import {CaseResultReq, CaseResultRes, GetPanelInfoReq, PanelInfo} from "@/api/model";
 import {getCaseResult} from "@/api/case-manage";
 import {useRouter} from "vue-router";
+import {getPanelInfo} from "@/api/dashboard";
 
 const btRef = ref('')
 const router = useRouter()
 
 const tableData: Ref<CaseResultRes[]> = ref([])
+let panelInfo: Ref<PanelInfo> = ref({
+  last_run_time: ""
+})
 
 //yi
 let c: Ref<number>
@@ -81,6 +108,21 @@ onMounted(() => {
 })
 
 function initData() {
+  queryPanelInfo()
+  queryCaseResult()
+}
+
+function queryPanelInfo () {
+  const reqInfo: GetPanelInfoReq = {
+    project_id: localStorage.getItem("projectId")
+  }
+  getPanelInfo(reqInfo).then(response => {
+    console.log(response)
+    panelInfo.value = response.result
+  })
+}
+
+function queryCaseResult() {
   const reqInfo: CaseResultReq = {
 
   }
@@ -114,13 +156,13 @@ function handleClick() {
 <style lang="scss" scoped>
 .wrapper {
   height: 100%;
+  padding: 10px;
   .panel {
     height: 150px;
     display: flex;
     flex-wrap: wrap;
     .card-container {
       height: 100%;
-      max-width: 25%;
       flex: 0 0 25%;
       //padding-left: 10px;
       //padding-right: 10px;
@@ -129,6 +171,16 @@ function handleClick() {
         margin-left: 5px;
         margin-right: 5px;
         height: 100%;
+        .title {
+          font-size: 20px;
+          text-align: left;
+          font-weight: bold;
+        }
+        .content {
+          font-size: 20px;
+          margin-top: 18px;
+          text-align: center;
+        }
       }
     }
   }

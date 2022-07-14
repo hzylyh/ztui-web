@@ -1,9 +1,10 @@
 import http from '@/utils/http'
-import {GetResultReq} from "@/api/model";
+import {GetPanelInfoReq, PanelInfo} from "@/api/model";
+import {BaseResPromise} from "@/types/http";
 
-export function getResult(params: GetResultReq) {
+export function getPanelInfo(params: GetPanelInfoReq): BaseResPromise<PanelInfo> {
   return http.request({
-    url: '/dashboard/getResult',
+    url: '/dashboard/getPanelInfo',
     method: 'post',
     data: params
   })
