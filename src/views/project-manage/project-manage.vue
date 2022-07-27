@@ -58,7 +58,7 @@
 import {onMounted, reactive, Ref, ref} from "vue";
 import { nanoid } from 'nanoid'
 import {getCaseList} from '@/api/case-manage'
-import {CaseListReq, CaseInfoRes, ProjectListReq, ProjectInfo, AddProjectForm, DeleteProjectForm} from "@/api/model";
+import {CaseListReq, ProjectListReq, ProjectInfo, AddProjectForm, DeleteProjectForm} from "@/api/model";
 import {getProjectList, addProject, deleteProject} from "@/api/project-manage";
 import {useRouter} from "vue-router";
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -138,7 +138,8 @@ function handleDelProject(projectId: string) {
 
 // 进入项目
 function handleEnterProject(projectId: string) {
-  router.push({ name: 'Dashboard', query: { projectId: projectId } })
+  // router.push({ name: 'Dashboard', query: { projectId: projectId } })
+  router.push({ name: 'Dashboard'})
   localStorage.setItem('projectId', projectId)
 }
 

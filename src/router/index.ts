@@ -20,6 +20,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/case-manage/case-manage.vue'),
       },
       {
+        path: '/caseStepManage',
+        name: 'CaseStepManage',
+        component: () => import('@/views/case-step-manage/case-step-manage.vue'),
+      },
+      {
         path: '/POManage',
         name: 'POManage',
         component: () => import('@/views/po-manage/po-manage.vue'),

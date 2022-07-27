@@ -6,11 +6,11 @@
  * @Path: src/api/engine.ts
  */
 
-import {AddPageReq, PageInfo} from "@/api/model";
+import {PageInfo, RunCaseReq} from "@/api/model";
 import {BaseResPromise} from "@/types/http";
 import http from "@/utils/http";
 
-export function run(params: AddPageReq): BaseResPromise<PageInfo[]> {
+export function run(params: RunCaseReq): BaseResPromise<PageInfo[]> {
   return http.request({
     url: '/engine/run',
     method: 'post',

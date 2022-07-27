@@ -32,13 +32,13 @@
     </div>
     <div class="table-container">
       <ElTable :data="tableData">
-        <ElTableColumn label="用例编号">
-          <template #default="scope">
-            <div style="display: flex; align-items: center">
-              <span style="margin-left: 10px">{{ scope.row.case_id }}</span>
-            </div>
-          </template>
-        </ElTableColumn>
+<!--        <ElTableColumn label="用例编号">-->
+<!--          <template #default="scope">-->
+<!--            <div style="display: flex; align-items: center">-->
+<!--              <span style="margin-left: 10px">{{ scope.row.case_id }}</span>-->
+<!--            </div>-->
+<!--          </template>-->
+<!--        </ElTableColumn>-->
         <ElTableColumn label="用例名称">
           <template #default="scope">
             <div style="display: flex; align-items: center">
@@ -46,13 +46,13 @@
             </div>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="用例模块">
-          <template #default="scope">
-            <div style="display: flex; align-items: center">
-              <span style="margin-left: 10px">{{ scope.row.module_name }}</span>
-            </div>
-          </template>
-        </ElTableColumn>
+<!--        <ElTableColumn label="用例模块">-->
+<!--          <template #default="scope">-->
+<!--            <div style="display: flex; align-items: center">-->
+<!--              <span style="margin-left: 10px">{{ scope.row.module_name }}</span>-->
+<!--            </div>-->
+<!--          </template>-->
+<!--        </ElTableColumn>-->
         <ElTableColumn label="步骤">
           <template #default="scope">
             <div style="display: flex; align-items: center">
@@ -76,6 +76,22 @@
             </div>
           </template>
         </ElTableColumn>
+        <ElTableColumn label="操作"
+                       width="100">
+          <template #default="scope">
+            <el-button size="small"
+                       link
+                       type="primary"
+                       v-if="scope.row.result === '1'"
+                       @click="handleCheckResult(scope.row)">查看异常
+            </el-button>
+<!--            <el-button-->
+<!--                size="small"-->
+<!--                type="danger"-->
+<!--                @click="handleDeleteCase(scope.row)">删除-->
+<!--            </el-button>-->
+          </template>
+        </ElTableColumn>
       </ElTable>
     </div>
   </div>
@@ -89,67 +105,66 @@ import {CaseResultReq, CaseResultRes, GetPanelInfoReq, PanelInfo} from "@/api/mo
 import {getCaseResult} from "@/api/case-manage";
 import {useRouter} from "vue-router";
 import {getPanelInfo} from "@/api/dashboard";
+import {Action, ElMessage, ElMessageBox} from 'element-plus'
 
 const btRef = ref('')
 const router = useRouter()
 
 const tableData: Ref<CaseResultRes[]> = ref([])
 let panelInfo: Ref<PanelInfo> = ref({
-  last_run_time: ""
+  last_run_time: "",
+  case_num: "",
+  success_num: "",
+  fail_num: ""
 })
 
-//yi
-let c: Ref<number>
-c = ref(0)
+let startTime: string = ''
 
 onMounted(() => {
   initData()
 
 })
 
-function initData() {
-  queryPanelInfo()
-  queryCaseResult()
+async function initData() {
+  // debugger
+  await queryPanelInfo()
+  await queryCaseResult()
 }
 
-function queryPanelInfo () {
+async function queryPanelInfo () {
   const reqInfo: GetPanelInfoReq = {
     project_id: localStorage.getItem("projectId")
   }
-  getPanelInfo(reqInfo).then(response => {
-    console.log(response)
-    panelInfo.value = response.result
-  })
+  // debugger
+  let response = await getPanelInfo(reqInfo)
+  panelInfo.value = response.result
+  // debugger
+  startTime = response.result.last_run_time
 }
 
-function queryCaseResult() {
+async function queryCaseResult() {
   const reqInfo: CaseResultReq = {
-
+    "start_time": startTime
   }
-  getCaseResult(reqInfo).then(response => {
-    tableData.value = response.result
+  let response = await getCaseResult(reqInfo)
+  tableData.value = response.result
+}
+
+function handleCheckResult(caseResult: CaseResultRes) {
+  ElMessageBox.alert(caseResult.message, '异常信息', {
+    // if you want to disable its autofocus
+    // autofocus: false,
+    // confirmButtonText: 'OK',
+    showConfirmButton: false,
+    showCancelButton: true,
+    cancelButtonText: '关闭',
+    // callback: (action: Action) => {
+    //   ElMessage({
+    //     type: 'info',
+    //     message: `action: ${action}`,
+    //   })
+    // },
   })
-}
-
-function test(arr: Array<Array<number>>, type: string): Array<number> {
-  let typeMap: Record<string, number> = {
-    'x': 0,
-    'y': 1
-  }
-  let res: Array<number> = []
-  for (let i = 0; i < arr.length - 1; i++) {
-    if (arr[i][typeMap[type]] > arr[i+1][typeMap[type]]) {
-      res = arr[i]
-    } else {
-      res = arr[i + 1]
-    }
-  }
-  return res
-}
-
-function handleClick() {
-  console.log('ddd')
-  console.log(btRef)
 }
 </script>
 

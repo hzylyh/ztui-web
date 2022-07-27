@@ -87,7 +87,7 @@
               </ElTableColumn>
               <ElTableColumn label="操作">
                 <template #default="scope">
-                  <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑
+                  <el-button size="small" @click="handleEditPO(scope.row)">编辑
                   </el-button>
                   <el-button
                       size="small"
@@ -130,7 +130,7 @@
   <!--    新增PO dialog-->
   <div class="add-dialog">
     <ElDialog v-model="addPODialogVisible"
-              title="新增页面"
+              :title="titleMap[action]"
               width="30%">
       <ElForm :label-position="labelPosition"
               label-width="100px"
@@ -169,13 +169,12 @@ import {
   AddPageReq,
   AddPOReq,
   DeletePageReq, DeletePOReq,
-  DetailProjectReq,
-  GetPageReq,
+  DetailProjectReq, ListPageReq,
   ListPOReq,
   PageObjectInfo,
   POTree
 } from "@/api/model";
-import {onMounted, Ref, ref} from "vue";
+import {onMounted, reactive, Ref, ref} from "vue";
 import {addPage, deletePage, getPageList} from "@/api/page-manage";
 import {getProjectDetail} from "@/api/project-manage";
 import type Node from 'element-plus/es/components/tree/src/model/node'
@@ -189,6 +188,11 @@ let addPODialogVisible = ref(false)
 let labelPosition = ref('right')
 let currNode: POTree
 let tableData: Ref<PageObjectInfo[]> = ref([])
+let action = ref('')
+const titleMap = reactive({
+  'add': '新增页面对象',
+  'edit': '编辑页面对象',
+})
 
 let addPageForm: Ref<AddPageReq> = ref({
   page_id: '',
@@ -229,7 +233,7 @@ function queryProjectList () {
 // 获取页面列表
 function queryPageList () {
   data.value = []
-  const pageReq: GetPageReq = {
+  const pageReq: ListPageReq = {
     project_id: localStorage.getItem('projectId')
   }
   const projectReq: DetailProjectReq = {
@@ -274,6 +278,8 @@ function handleAddPageAction () {
 
 //
 function handleAddPO() {
+
+  action.value = 'add'
   addPODialogVisible.value = true
 }
 
@@ -329,6 +335,12 @@ function handleRemoveNode (node: Node, data: POTree) {
           message: '删除失败',
         })
       })
+}
+
+function handleEditPO(row: PageObjectInfo) {
+  addPODialogVisible.value = true
+  action.value = 'edit'
+  addPageObjectForm.value = row
 }
 
 function handleDeletePO(row: PageObjectInfo) {

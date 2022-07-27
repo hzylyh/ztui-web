@@ -1,9 +1,15 @@
 import http from '@/utils/http'
-import {AddProjectForm, CaseInfoRes, CaseListReq, DeleteProjectForm, DetailProjectReq, ProjectInfo} from "@/api/model";
+import {
+  AddProjectForm,
+  DeleteProjectForm,
+  DetailProjectReq,
+  ProjectInfo,
+  ProjectListReq
+} from "@/api/model";
 import {BaseResPromise} from "@/types/http";
 
 // 新增项目接口
-export function addProject(params: AddProjectForm): BaseResPromise<CaseInfoRes[]> {
+export function addProject(params: AddProjectForm): BaseResPromise<ProjectInfo[]> {
   return http.request({
     url: '/projectManage/add',
     method: 'post',
@@ -12,7 +18,7 @@ export function addProject(params: AddProjectForm): BaseResPromise<CaseInfoRes[]
 }
 
 // 删除项目接口
-export function deleteProject(params: DeleteProjectForm): BaseResPromise<CaseInfoRes[]> {
+export function deleteProject(params: DeleteProjectForm): BaseResPromise<ProjectInfo[]> {
   return http.request({
     url: '/projectManage/delete',
     method: 'post',
@@ -31,7 +37,7 @@ export function getProjectDetail(params: DetailProjectReq): BaseResPromise<Proje
 
 
 // 获取项目列表
-export function getProjectList(params: CaseListReq): BaseResPromise<ProjectInfo[]> {
+export function getProjectList(params: ProjectListReq): BaseResPromise<ProjectInfo[]> {
   return http.request({
     url: '/projectManage/getProjectList',
     method: 'post',

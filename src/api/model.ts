@@ -1,7 +1,14 @@
 import exp from "constants";
 
+export interface RunCaseReq {
+  project_id: string | null
+}
+
 export interface PanelInfo {
   last_run_time: string
+  case_num: string
+  success_num: string
+  fail_num: string
 }
 
 export interface GetPanelInfoReq {
@@ -25,6 +32,7 @@ export interface CaseResultRes {
   case_name: string
   start_time: string
   result: string
+  message: string
 }
 
 export interface ProjectListReq {
@@ -70,20 +78,29 @@ export type AddPOReq = PageObjectInfo
 export type DeletePOReq = PageObjectInfo
 
 export interface ListPOReq {
-  page_id: string
+  page_id: string | null
 }
 
+// old
+// export interface CaseInfo {
+//   case_id: string
+//   case_name: string
+//   module_name: string
+//   step: string
+//   page_id: string
+//   po_id: string
+//   input_value: string
+//   expect_value: string
+//   project_id: string | null
+// }
 
+// new
 export interface CaseInfo {
   case_id: string
   case_name: string
-  module_name: string
-  step: string
-  page_id: string
-  po_id: string
-  input_value: string
-  expect_value: string
+  case_desc: string
   project_id: string | null
+  case_creator: string
 }
 
 export type AddCaseReq = CaseInfo
@@ -97,4 +114,28 @@ export interface POTree {
   label: string | null | undefined
   id: string | null
   children?: POTree[]
+}
+
+export interface CaseStepInfo {
+  step_id: string
+  step_name: string
+  case_id: string | null
+  page_id: string
+  po_id: string
+  input_value: string
+  expect_value: string
+}
+
+export type AddCaseStepReq = CaseStepInfo
+
+export interface DeleteCaseStepReq {
+  step_id: string
+}
+
+export interface DeleteCaseStepReq {
+  step_id: string
+}
+
+export interface ListCaseStepReq {
+  case_id: string | null
 }
