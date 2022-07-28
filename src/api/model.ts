@@ -99,6 +99,7 @@ export interface CaseInfo {
   case_id: string
   case_name: string
   case_desc: string
+  is_run: string
   project_id: string | null
   case_creator: string
 }

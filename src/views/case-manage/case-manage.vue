@@ -13,9 +13,7 @@
       </div>
 
       <div class="table">
-        <ElTable :data="tableData"
-                 @row-click="handleCaseRowClick"
-                 @selection-change="handleCaseSelect">
+        <ElTable :data="tableData">
 <!--          <ElTableColumn label="用例编号">-->
 <!--            <template #default="scope">-->
 <!--              <div style="display: flex; align-items: center">-->
@@ -23,7 +21,7 @@
 <!--              </div>-->
 <!--            </template>-->
 <!--          </ElTableColumn>-->
-          <ElTableColumn type="selection" width="55" />
+<!--          <ElTableColumn type="selection" width="55" />-->
           <ElTableColumn type="index" width="50" />
           <ElTableColumn label="用例名称">
             <template #default="scope">
@@ -39,6 +37,29 @@
               </div>
             </template>
           </ElTableColumn>
+<!--          <ElTableColumn label="是否执行">-->
+<!--            <template #default="scope">-->
+<!--              <div style="display: flex; align-items: center">-->
+<!--                <el-switch v-model="scope.row.is_run"-->
+<!--                           @change="handleChangeCaseRun"-->
+<!--                           active-value="1"-->
+<!--                           inactive-value="0"-->
+<!--                           size="small"/>-->
+<!--              </div>-->
+<!--            </template>-->
+<!--          </ElTableColumn>-->
+          <ElTableColumn label="是否运行">
+            <template #default="scope">
+              <div style="display: flex; align-items: center">
+                <el-tag :type="scope.row.is_run === '1' ? 'success' : 'info'"
+                        class="mx-1"
+                        effect="light"
+                >
+                  {{ scope.row.is_run === '1' ? '运行' : '跳过' }}
+                </el-tag>
+              </div>
+            </template>
+          </ElTableColumn>
           <ElTableColumn label="创建人">
             <template #default="scope">
               <div style="display: flex; align-items: center">
@@ -48,13 +69,13 @@
           </ElTableColumn>
           <ElTableColumn label="操作">
             <template #default="scope">
-              <el-button size="small" @click.stop="handleEditCase(scope.row)">编辑
-              </el-button>
-              <el-button
-                  size="small"
-                  type="danger"
-                  @click.stop="handleDeleteCase(scope.row)">删除
-              </el-button>
+              <el-button size="small"
+                         @click="handleViewStep(scope.row)">查看步骤</el-button>
+              <el-button size="small"
+                         @click="handleEditCase(scope.row)">编辑</el-button>
+              <el-button size="small"
+                         type="danger"
+                         @click="handleDeleteCase(scope.row)">删除</el-button>
             </template>
           </ElTableColumn>
         </ElTable>
@@ -74,6 +95,12 @@
         <ElFormItem label="用例名称">
           <ElInput v-model="caseForm.case_name"
                     placeholder="请输入" />
+        </ElFormItem>
+        <ElFormItem label="是否执行">
+          <ElSwitch v-model="caseForm.is_run"
+                    active-value="1"
+                    inactive-value="0"
+                    size="small"/>
         </ElFormItem>
         <ElFormItem label="用例描述">
           <ElInput v-model="caseForm.case_desc"
@@ -123,11 +150,13 @@ const titleMap = reactive({
   'add': '新增用例',
   'edit': '编辑用例',
 })
+let switchValue = ref(true)
 
 let caseForm: Ref<AddCaseReq> = ref({
   case_id: "",
   case_name: "",
   case_desc: "",
+  is_run: "1",
   case_creator: "",
   project_id: ""
 })
@@ -141,8 +170,8 @@ function handleCaseSelect(val) {
 
 }
 
-// 单行用例被点击时出发
-function handleCaseRowClick(row: CaseInfo) {
+// 查看用例步骤
+function handleViewStep(row: CaseInfo) {
   console.log(row.case_id)
   localStorage.setItem("caseId", row.case_id)
   router.push({name: 'CaseStepManage'})
@@ -167,7 +196,6 @@ function queryCaseList() {
   }
   getCaseList(reqInfo).then(response => {
     tableData.value = response.result
-
   })
 }
 
@@ -269,6 +297,20 @@ function handleRunCase() {
   run(runCaseReq).then(res => {
     console.log(res)
   })
+}
+
+function handleChangeCaseRun(val: boolean) {
+  if (val) {
+    caseForm.value.is_run = '1'
+    editCase(caseForm.value).then(res => {
+      queryCaseList()
+    })
+  } else {
+    caseForm.value.is_run = '0'
+    editCase(caseForm.value).then(res => {
+      queryCaseList()
+    })
+  }
 }
 
 
