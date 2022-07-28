@@ -134,21 +134,21 @@
               width="30%">
       <ElForm :label-position="labelPosition"
               label-width="100px"
-              :model="addPageObjectForm">
+              :model="pageObjectForm">
         <el-form-item label="对象名称">
-          <el-input v-model="addPageObjectForm.po_name"
+          <el-input v-model="pageObjectForm.po_name"
                     placeholder="请输入页面对象名称" />
         </el-form-item>
         <el-form-item label="定位方式">
-          <el-input v-model="addPageObjectForm.locate_type"
+          <el-input v-model="pageObjectForm.locate_type"
                     placeholder="请输入" />
         </el-form-item>
         <el-form-item label="定位值">
-          <el-input v-model="addPageObjectForm.locate_value"
+          <el-input v-model="pageObjectForm.locate_value"
                     placeholder="请输入" />
         </el-form-item>
         <el-form-item label="操作">
-          <el-input v-model="addPageObjectForm.action"
+          <el-input v-model="pageObjectForm.action"
                     placeholder="请输入" />
         </el-form-item>
       </ElForm>
@@ -156,7 +156,7 @@
           <span class="dialog-footer">
             <el-button @click="addPODialogVisible = false">取消</el-button>
             <el-button type="primary"
-                       @click="handleAddPOAction">确认</el-button>
+                       @click="handlePOAction">确认</el-button>
           </span>
       </template>
     </ElDialog>
@@ -180,7 +180,8 @@ import {getProjectDetail} from "@/api/project-manage";
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import {ElMessage, ElMessageBox} from "element-plus";
 import {nanoid} from "nanoid";
-import {addPageObject, deletePageObject, getPageObjectList} from "@/api/page-object-manage";
+import {addPageObject, deletePageObject, editPageObject, getPageObjectList} from "@/api/page-object-manage";
+import {editCase} from "@/api/case-manage";
 
 let data: Ref<POTree[]> = ref([])
 let addDialogVisible = ref(false)
@@ -200,7 +201,7 @@ let addPageForm: Ref<AddPageReq> = ref({
   project_id: ''
 })
 
-let addPageObjectForm: Ref<AddPOReq> = ref({
+let pageObjectForm: Ref<AddPOReq> = ref({
   po_id: '',
   po_name: '',
   locate_type: '',
@@ -228,6 +229,14 @@ function handleNodeClick (data: POTree) {
 // 获取项目信息
 function queryProjectList () {
 
+}
+
+function handlePOAction() {
+  if (action.value === 'add') {
+    handleAddPOAction()
+  } else if (action.value === 'edit') {
+    handleEditPOAction()
+  }
 }
 
 // 获取页面列表
@@ -284,9 +293,9 @@ function handleAddPO() {
 }
 
 function handleAddPOAction() {
-  addPageObjectForm.value.page_id = currNode.id
-  addPageObjectForm.value.po_id = nanoid()
-  addPageObject(addPageObjectForm.value).then(_ => {
+  pageObjectForm.value.page_id = currNode.id
+  pageObjectForm.value.po_id = nanoid()
+  addPageObject(pageObjectForm.value).then(_ => {
     addPODialogVisible.value = false
     queryProjectList()
     if (currNode.id != null) {
@@ -295,7 +304,7 @@ function handleAddPOAction() {
   })
 }
 
-function queryPageObjectList(pageId: string) {
+function queryPageObjectList(pageId: string | null) {
   const listReq: ListPOReq = {
     page_id: pageId
   }
@@ -340,7 +349,14 @@ function handleRemoveNode (node: Node, data: POTree) {
 function handleEditPO(row: PageObjectInfo) {
   addPODialogVisible.value = true
   action.value = 'edit'
-  addPageObjectForm.value = row
+  pageObjectForm.value = row
+}
+
+function handleEditPOAction() {
+  editPageObject(pageObjectForm.value).then(res => {
+    addPODialogVisible.value = false
+    queryPageObjectList(currNode.id)
+  })
 }
 
 function handleDeletePO(row: PageObjectInfo) {

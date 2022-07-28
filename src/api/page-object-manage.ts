@@ -34,6 +34,15 @@ export function deletePageObject(params: DeletePOReq): BaseResPromise<PageInfo[]
   })
 }
 
+// 修改PO接口
+export function editPageObject(params: AddPOReq): BaseResPromise<PageInfo[]> {
+  return http.request({
+    url: '/pageObjectManage/edit',
+    method: 'post',
+    data: params
+  })
+}
+
 
 // 查询页面对象列表接口
 export function getPageObjectList(params: ListPOReq): BaseResPromise<PageObjectInfo[]> {
