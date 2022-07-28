@@ -2,7 +2,8 @@
   <div class="wrapper">
     <!-- 头部 -->
     <div class="header">
-      <div class="title">VineTestPlatform</div>
+      <div class="title"
+           @click="handleLogoClick">VineTestPlatform</div>
     </div>
 
     <!-- 主体部分 -->
@@ -76,7 +77,12 @@
 </template>
 
 <script lang="ts" setup>
+import {useRouter} from "vue-router";
 
+const router = useRouter()
+function handleLogoClick() {
+  router.push({ name:  'WithoutNav'})
+}
 </script>
 
 <style lang="scss" scoped>
@@ -92,6 +98,7 @@ $height: 64px;
     height: $height;
     color: #fff;
     .title {
+      cursor: pointer;
       width: 15%;
       text-align: center;
       font-weight: bold;
