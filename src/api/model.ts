@@ -109,6 +109,8 @@ export interface DeleteCaseReq {
   case_id: string
 }
 
+export type EditCaseReq = CaseInfo
+
 export interface POTree {
   root?: boolean
   label: string | null | undefined

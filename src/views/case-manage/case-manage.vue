@@ -46,41 +46,6 @@
               </div>
             </template>
           </ElTableColumn>
-<!--          <ElTableColumn label="用例模块">-->
-<!--            <template #default="scope">-->
-<!--              <div style="display: flex; align-items: center">-->
-<!--                <span style="margin-left: 10px">{{ scope.row.module_name }}</span>-->
-<!--              </div>-->
-<!--            </template>-->
-<!--          </ElTableColumn>-->
-<!--          <ElTableColumn label="步骤">-->
-<!--            <template #default="scope">-->
-<!--              <div style="display: flex; align-items: center">-->
-<!--                <span style="margin-left: 10px">{{ scope.row.step }}</span>-->
-<!--              </div>-->
-<!--            </template>-->
-<!--          </ElTableColumn>-->
-<!--          <ElTableColumn label="po">-->
-<!--            <template #default="scope">-->
-<!--              <div style="display: flex; align-items: center">-->
-<!--                <span style="margin-left: 10px">{{ scope.row.po }}</span>-->
-<!--              </div>-->
-<!--            </template>-->
-<!--          </ElTableColumn>-->
-<!--          <ElTableColumn label="po属性">-->
-<!--            <template #default="scope">-->
-<!--              <div style="display: flex; align-items: center">-->
-<!--                <span style="margin-left: 10px">{{ scope.row.po_attr }}</span>-->
-<!--              </div>-->
-<!--            </template>-->
-<!--          </ElTableColumn>-->
-<!--          <ElTableColumn label="输入">-->
-<!--            <template #default="scope">-->
-<!--              <div style="display: flex; align-items: center">-->
-<!--                <span style="margin-left: 10px">{{ scope.row.input_value }}</span>-->
-<!--              </div>-->
-<!--            </template>-->
-<!--          </ElTableColumn>-->
           <ElTableColumn label="操作">
             <template #default="scope">
               <el-button size="small" @click.stop="handleEditCase(scope.row)">编辑
@@ -101,60 +66,25 @@
   <!--    新增用例 dialog-->
   <div class="add-dialog">
     <ElDialog v-model="addDialogVisible"
-              title="新增用例"
+              :title="titleMap[action]"
               width="30%">
       <ElForm :label-position="labelPosition"
               label-width="100px"
-              :model="addCaseForm">
+              :model="caseForm">
         <ElFormItem label="用例名称">
-          <ElInput v-model="addCaseForm.case_name"
+          <ElInput v-model="caseForm.case_name"
                     placeholder="请输入" />
         </ElFormItem>
         <ElFormItem label="用例描述">
-          <ElInput v-model="addCaseForm.case_desc"
+          <ElInput v-model="caseForm.case_desc"
                    placeholder="请输入" />
         </ElFormItem>
-<!--        <el-form-item label="所属模块">-->
-<!--          <el-input v-model="addCaseForm.module_name"-->
-<!--                    placeholder="请输入" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="步骤">-->
-<!--          <el-input v-model="addCaseForm.step"-->
-<!--                    placeholder="请输入" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="页面">-->
-<!--          <el-select v-model="addCaseForm.page_id"-->
-<!--                     @change="handlePageChange"-->
-<!--                     placeholder="Select">-->
-<!--            <el-option v-for="item in pageOptions"-->
-<!--                       :key="item.page_id"-->
-<!--                       :label="item.page_name"-->
-<!--                       :value="item.page_id"/>-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="页面对象">-->
-<!--          <el-select v-model="addCaseForm.po_id"-->
-<!--                     placeholder="Select">-->
-<!--            <el-option v-for="item in poOptions"-->
-<!--                       :key="item.po_id"-->
-<!--                       :label="item.po_name"-->
-<!--                       :value="item.po_id"/>-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="输入">-->
-<!--          <el-input v-model="addCaseForm.input_value"-->
-<!--                    placeholder="请输入" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="预期">-->
-<!--          <el-input v-model="addCaseForm.expect_value"-->
-<!--                    placeholder="请输入" />-->
-<!--        </el-form-item>-->
       </ElForm>
       <template #footer>
           <span class="dialog-footer">
             <el-button @click="addDialogVisible = false">取消</el-button>
             <el-button type="primary"
-                       @click="handleAddCaseAction">确认</el-button>
+                       @click="handleCaseAction">确认</el-button>
           </span>
       </template>
     </ElDialog>
@@ -162,8 +92,8 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, Ref, ref, watch} from "vue";
-import {addCase, deleteCase, getCaseList} from '@/api/case-manage'
+import {onMounted, reactive, Ref, ref, watch} from "vue";
+import {addCase, deleteCase, editCase, getCaseList} from '@/api/case-manage'
 import {
   AddCaseReq,
   CaseInfo,
@@ -188,28 +118,19 @@ let addDialogVisible = ref(false)
 let labelPosition = ref('right')
 let pageOptions: Ref<PageInfo[]> = ref([])
 let poOptions: Ref<PageObjectInfo[]> = ref([])
+let action = ref('')
+const titleMap = reactive({
+  'add': '新增用例',
+  'edit': '编辑用例',
+})
 
-let addCaseForm: Ref<AddCaseReq> = ref({
+let caseForm: Ref<AddCaseReq> = ref({
   case_id: "",
   case_name: "",
   case_desc: "",
   case_creator: "",
-  // expect_value: "",
-  // input_value: "",
-  // module_name: "",
-  // page_id: "",
-  // po_id: "",
-  // step: "",
   project_id: ""
 })
-
-// watch(
-//     [() => addCaseForm.page_id],
-//     (val, oldVar) => {
-//       console.log(val)
-//     },
-//     {deep: true}
-// )
 
 onMounted(() => {
   initData()
@@ -270,15 +191,24 @@ function queryPageObjectList(pageId: string) {
   return getPageObjectList(reqInfo)
 }
 
+function handleCaseAction() {
+  if (action.value === 'add') {
+    handleAddCaseAction()
+  } else if (action.value === 'edit') {
+    handleEditCaseAction()
+  }
+}
+
 // 添加用例
 function handleAddCase () {
+  action.value = 'add'
   addDialogVisible.value = true
 }
 
 function handleAddCaseAction() {
-  addCaseForm.value.case_id = nanoid()
-  addCaseForm.value.project_id = localStorage.getItem('projectId')
-  addCase(addCaseForm.value).then(res => {
+  caseForm.value.case_id = nanoid()
+  caseForm.value.project_id = localStorage.getItem('projectId')
+  addCase(caseForm.value).then(res => {
     addDialogVisible.value = false
     queryCaseList()
   })
@@ -286,12 +216,18 @@ function handleAddCaseAction() {
 
 
 function handleEditCase(row: CaseInfo) {
+  action.value = 'edit'
   addDialogVisible.value = true
-  addCaseForm.value = row
+  caseForm.value = row
 }
 
 function handleEditCaseAction() {
-
+  console.log(action.value)
+  console.log('edit')
+  editCase(caseForm.value).then(res => {
+    addDialogVisible.value = false
+    queryCaseList()
+  })
 }
 
 function handleDeleteCase(row: CaseInfo) {

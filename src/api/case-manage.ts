@@ -1,5 +1,5 @@
 import http from '@/utils/http'
-import {AddCaseReq, CaseInfo, CaseListReq, CaseResultReq, CaseResultRes, DeleteCaseReq} from "@/api/model";
+import {AddCaseReq, CaseInfo, CaseListReq, CaseResultReq, CaseResultRes, DeleteCaseReq, EditCaseReq} from "@/api/model";
 import {BaseResPromise} from "@/types/http";
 
 export function addCase(params: AddCaseReq): BaseResPromise<CaseInfo[]> {
@@ -13,6 +13,14 @@ export function addCase(params: AddCaseReq): BaseResPromise<CaseInfo[]> {
 export function deleteCase(params: DeleteCaseReq): BaseResPromise<CaseInfo[]> {
   return http.request({
     url: '/caseManage/delete',
+    method: 'post',
+    data: params
+  })
+}
+
+export function editCase(params: EditCaseReq): BaseResPromise<CaseInfo[]> {
+  return http.request({
+    url: '/caseManage/edit',
     method: 'post',
     data: params
   })
