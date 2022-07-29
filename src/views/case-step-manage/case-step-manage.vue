@@ -18,7 +18,6 @@
       <div class="table">
         <ElTable :data="tableData"
                  @selection-change="handleCaseSelect">
-          <ElTableColumn type="selection" width="55" />
           <ElTableColumn type="index" width="50" />
           <ElTableColumn label="步骤名称">
             <template #default="scope">
