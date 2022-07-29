@@ -33,11 +33,3 @@ export function getCaseList(params: CaseListReq): BaseResPromise<CaseInfo[]> {
     data: params
   })
 }
-
-export function getCaseResult(params: CaseResultReq): BaseResPromise<CaseResultRes[]> {
-  return http.request({
-    url: '/caseManage/getCaseResult',
-    method: 'post',
-    data: params
-  })
-}

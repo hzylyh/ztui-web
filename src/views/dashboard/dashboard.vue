@@ -32,13 +32,6 @@
     </div>
     <div class="table-container">
       <ElTable :data="tableData">
-<!--        <ElTableColumn label="用例编号">-->
-<!--          <template #default="scope">-->
-<!--            <div style="display: flex; align-items: center">-->
-<!--              <span style="margin-left: 10px">{{ scope.row.case_id }}</span>-->
-<!--            </div>-->
-<!--          </template>-->
-<!--        </ElTableColumn>-->
         <ElTableColumn label="用例名称">
           <template #default="scope">
             <div style="display: flex; align-items: center">
@@ -46,27 +39,13 @@
             </div>
           </template>
         </ElTableColumn>
-<!--        <ElTableColumn label="用例模块">-->
-<!--          <template #default="scope">-->
-<!--            <div style="display: flex; align-items: center">-->
-<!--              <span style="margin-left: 10px">{{ scope.row.module_name }}</span>-->
-<!--            </div>-->
-<!--          </template>-->
-<!--        </ElTableColumn>-->
         <ElTableColumn label="步骤">
           <template #default="scope">
             <div style="display: flex; align-items: center">
-              <span style="margin-left: 10px">{{ scope.row.step }}</span>
+              <span style="margin-left: 10px">{{ scope.row.step_name }}</span>
             </div>
           </template>
         </ElTableColumn>
-<!--        <ElTableColumn label="输入">-->
-<!--          <template #default="scope">-->
-<!--            <div style="display: flex; align-items: center">-->
-<!--              <span style="margin-left: 10px">{{ scope.row.input_value }}</span>-->
-<!--            </div>-->
-<!--          </template>-->
-<!--        </ElTableColumn>-->
         <ElTableColumn label="执行结果">
           <template #default="scope">
             <div style="display: flex; align-items: center">
@@ -79,35 +58,28 @@
         <ElTableColumn label="操作"
                        width="100">
           <template #default="scope">
-            <el-button size="small"
-                       link
-                       type="primary"
-                       v-if="scope.row.result === '1'"
-                       @click="handleCheckResult(scope.row)">查看异常
-            </el-button>
-<!--            <el-button-->
-<!--                size="small"-->
-<!--                type="danger"-->
-<!--                @click="handleDeleteCase(scope.row)">删除-->
-<!--            </el-button>-->
+            <ElButton size="small"
+                      link
+                      type="primary"
+                      v-if="scope.row.result === '1'"
+                      @click="handleCheckResult(scope.row)">查看异常
+            </ElButton>
           </template>
         </ElTableColumn>
       </ElTable>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import type {Ref} from "vue";
 import {CaseResultReq, CaseResultRes, GetPanelInfoReq, PanelInfo} from "@/api/model";
-import {getCaseResult} from "@/api/case-manage";
+import {getCaseResult} from "@/api/dashboard";
 import {useRouter} from "vue-router";
 import {getPanelInfo} from "@/api/dashboard";
-import {Action, ElMessage, ElMessageBox} from 'element-plus'
+import {ElMessageBox} from 'element-plus'
 
-const btRef = ref('')
 const router = useRouter()
 
 const tableData: Ref<CaseResultRes[]> = ref([])
@@ -126,7 +98,6 @@ onMounted(() => {
 })
 
 async function initData() {
-  // debugger
   await queryPanelInfo()
   await queryCaseResult()
 }
@@ -135,10 +106,8 @@ async function queryPanelInfo () {
   const reqInfo: GetPanelInfoReq = {
     project_id: localStorage.getItem("projectId")
   }
-  // debugger
   let response = await getPanelInfo(reqInfo)
   panelInfo.value = response.result
-  // debugger
   startTime = response.result.last_run_time
 }
 
@@ -152,18 +121,9 @@ async function queryCaseResult() {
 
 function handleCheckResult(caseResult: CaseResultRes) {
   ElMessageBox.alert(caseResult.message, '异常信息', {
-    // if you want to disable its autofocus
-    // autofocus: false,
-    // confirmButtonText: 'OK',
     showConfirmButton: false,
     showCancelButton: true,
-    cancelButtonText: '关闭',
-    // callback: (action: Action) => {
-    //   ElMessage({
-    //     type: 'info',
-    //     message: `action: ${action}`,
-    //   })
-    // },
+    cancelButtonText: '关闭'
   })
 }
 </script>
@@ -179,10 +139,7 @@ function handleCheckResult(caseResult: CaseResultRes) {
     .card-container {
       height: 100%;
       flex: 0 0 25%;
-      //padding-left: 10px;
-      //padding-right: 10px;
       .card {
-        //width: 100%;
         margin-left: 5px;
         margin-right: 5px;
         height: 100%;
