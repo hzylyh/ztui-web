@@ -112,16 +112,16 @@
       <ElForm :label-position="labelPosition"
               label-width="100px"
               :model="addPageForm">
-        <el-form-item label="页面名称">
-          <el-input v-model="addPageForm.page_name"
+        <ElFormItem label="页面名称">
+          <ElInput v-model="addPageForm.page_name"
                     placeholder="请输入名称" />
-        </el-form-item>
+        </ElFormItem>
       </ElForm>
       <template #footer>
           <span class="dialog-footer">
-            <el-button @click="addDialogVisible = false">取消</el-button>
-            <el-button type="primary"
-                       @click="handleAddPageAction">确认</el-button>
+            <ElButton @click="addDialogVisible = false">取消</ElButton>
+            <ElButton type="primary"
+                       @click="handleAddPageAction">确认</ElButton>
           </span>
       </template>
     </ElDialog>

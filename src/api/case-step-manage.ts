@@ -9,7 +9,7 @@ import http from '@/utils/http'
 import {
   AddCaseStepReq,
   CaseStepInfo,
-  DeleteCaseStepReq,
+  DeleteCaseStepReq, EditCaseStepReq,
   ListCaseStepReq
 } from "@/api/model";
 import {BaseResPromise} from "@/types/http";
@@ -25,6 +25,14 @@ export function addCaseStep(params: AddCaseStepReq): BaseResPromise<CaseStepInfo
 export function deleteCaseStep(params: DeleteCaseStepReq): BaseResPromise<CaseStepInfo[]> {
   return http.request({
     url: '/caseStepManage/delete',
+    method: 'post',
+    data: params
+  })
+}
+
+export function editCaseStep(params: EditCaseStepReq): BaseResPromise<CaseStepInfo[]> {
+  return http.request({
+    url: '/caseStepManage/edit',
     method: 'post',
     data: params
   })

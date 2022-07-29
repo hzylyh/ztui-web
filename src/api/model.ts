@@ -139,6 +139,8 @@ export interface DeleteCaseStepReq {
   step_id: string
 }
 
+export type EditCaseStepReq = CaseStepInfo
+
 export interface ListCaseStepReq {
   case_id: string | null
 }

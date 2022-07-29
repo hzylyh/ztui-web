@@ -14,14 +14,6 @@
 
       <div class="table">
         <ElTable :data="tableData">
-<!--          <ElTableColumn label="用例编号">-->
-<!--            <template #default="scope">-->
-<!--              <div style="display: flex; align-items: center">-->
-<!--                <span style="margin-left: 10px">{{ scope.row.case_id }}</span>-->
-<!--              </div>-->
-<!--            </template>-->
-<!--          </ElTableColumn>-->
-<!--          <ElTableColumn type="selection" width="55" />-->
           <ElTableColumn type="index" width="50" />
           <ElTableColumn label="用例名称">
             <template #default="scope">
@@ -37,24 +29,12 @@
               </div>
             </template>
           </ElTableColumn>
-<!--          <ElTableColumn label="是否执行">-->
-<!--            <template #default="scope">-->
-<!--              <div style="display: flex; align-items: center">-->
-<!--                <el-switch v-model="scope.row.is_run"-->
-<!--                           @change="handleChangeCaseRun"-->
-<!--                           active-value="1"-->
-<!--                           inactive-value="0"-->
-<!--                           size="small"/>-->
-<!--              </div>-->
-<!--            </template>-->
-<!--          </ElTableColumn>-->
           <ElTableColumn label="是否运行">
             <template #default="scope">
               <div style="display: flex; align-items: center">
                 <el-tag :type="scope.row.is_run === '1' ? 'success' : 'info'"
                         class="mx-1"
-                        effect="light"
-                >
+                        effect="light">
                   {{ scope.row.is_run === '1' ? '运行' : '跳过' }}
                 </el-tag>
               </div>
@@ -150,7 +130,6 @@ const titleMap = reactive({
   'add': '新增用例',
   'edit': '编辑用例',
 })
-let switchValue = ref(true)
 
 let caseForm: Ref<AddCaseReq> = ref({
   case_id: "",
@@ -172,7 +151,6 @@ function handleCaseSelect(val) {
 
 // 查看用例步骤
 function handleViewStep(row: CaseInfo) {
-  console.log(row.case_id)
   localStorage.setItem("caseId", row.case_id)
   router.push({name: 'CaseStepManage'})
 }
@@ -184,7 +162,6 @@ function initData() {
 }
 
 async function handlePageChange(pageId: string) {
-  console.log(pageId)
   let res = await queryPageObjectList(pageId)
   poOptions.value = res.result
 }
@@ -250,8 +227,6 @@ function handleEditCase(row: CaseInfo) {
 }
 
 function handleEditCaseAction() {
-  console.log(action.value)
-  console.log('edit')
   editCase(caseForm.value).then(res => {
     addDialogVisible.value = false
     queryCaseList()

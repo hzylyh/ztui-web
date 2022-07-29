@@ -8,7 +8,6 @@
 <template>
   <div class="wrapper">
     <div class="handle-bar">
-
     </div>
 
     <div class="case-step-table">
@@ -16,7 +15,6 @@
         <ElButton type="primary"
                   @click="handleAddCaseStep">新增</ElButton>
       </div>
-
       <div class="table">
         <ElTable :data="tableData"
                  @selection-change="handleCaseSelect">
@@ -45,13 +43,13 @@
           </ElTableColumn>
           <ElTableColumn label="操作">
             <template #default="scope">
-              <el-button size="small" @click="handleEditCase(scope.row)">编辑
-              </el-button>
-              <el-button
+              <ElButton size="small" @click="handleEditCaseStep(scope.row)">编辑
+              </ElButton>
+              <ElButton
                   size="small"
                   type="danger"
                   @click="handleDeleteCaseStep(scope.row)">删除
-              </el-button>
+              </ElButton>
             </template>
           </ElTableColumn>
         </ElTable>
@@ -59,29 +57,28 @@
     </div>
   </div>
 
-
   <!--    新增用例 dialog-->
   <div class="add-dialog">
     <ElDialog v-model="addDialogVisible"
-              title="新增步骤"
+              :title="titleMap[action]"
               width="30%">
       <ElForm :label-position="labelPosition"
               label-width="100px"
-              :model="addCaseStepForm">
+              :model="caseStepForm">
         <ElFormItem label="步骤名称">
-          <ElInput v-model="addCaseStepForm.step_name"
+          <ElInput v-model="caseStepForm.step_name"
                    placeholder="请输入" />
         </ElFormItem>
         <ElFormItem label="输入">
-          <ElInput v-model="addCaseStepForm.input_value"
+          <ElInput v-model="caseStepForm.input_value"
                    placeholder="请输入" />
         </ElFormItem>
         <ElFormItem label="期望">
-          <ElInput v-model="addCaseStepForm.expect_value"
+          <ElInput v-model="caseStepForm.expect_value"
                    placeholder="请输入" />
         </ElFormItem>
         <ElFormItem label="页面">
-          <ElSelect v-model="addCaseStepForm.page_id"
+          <ElSelect v-model="caseStepForm.page_id"
                     @change="handlePageChange"
                     placeholder="Select">
             <ElOption v-for="item in pageOptions"
@@ -91,7 +88,7 @@
           </ElSelect>
         </ElFormItem>
         <ElFormItem label="页面对象">
-          <ElSelect v-model="addCaseStepForm.po_id"
+          <ElSelect v-model="caseStepForm.po_id"
                      placeholder="Select">
             <ElOption v-for="item in poOptions"
                        :key="item.po_id"
@@ -104,7 +101,7 @@
           <span class="dialog-footer">
             <ElButton @click="addDialogVisible = false">取消</ElButton>
             <ElButton type="primary"
-                       @click="handleAddCaseStepAction">确认</ElButton>
+                       @click="handleCaseStepAction">确认</ElButton>
           </span>
       </template>
     </ElDialog>
@@ -113,7 +110,7 @@
 
 <script setup lang="ts">
 import {useRouter} from "vue-router";
-import {onMounted, Ref, ref} from "vue";
+import {onMounted, reactive, Ref, ref} from "vue";
 import {
   AddCaseStepReq,
   CaseStepInfo,
@@ -125,21 +122,25 @@ import {
   PageObjectInfo
 } from "@/api/model";
 import {nanoid} from "nanoid";
-import {addCaseStep, deleteCaseStep, getCaseStepList} from "@/api/case-step-manage";
+import {addCaseStep, deleteCaseStep, editCaseStep, getCaseStepList} from "@/api/case-step-manage";
 import {getPageObjectList} from "@/api/page-object-manage";
 import {getPageList} from "@/api/page-manage";
 import {ElMessage, ElMessageBox} from "element-plus";
+import {editCase} from "@/api/case-manage";
 
 const router = useRouter()
-
 let tableData = ref()
 let addDialogVisible = ref(false)
 let labelPosition = ref('right')
 let pageOptions: Ref<PageInfo[]> = ref([])
 let poOptions: Ref<PageObjectInfo[]> = ref([])
+let action = ref('add')
+const titleMap = reactive({
+  'add': '新增用例',
+  'edit': '编辑用例',
+})
 
-
-let addCaseStepForm: Ref<AddCaseStepReq> = ref({
+let caseStepForm: Ref<AddCaseStepReq> = ref({
   step_id: '',
   step_name: '',
   case_id: '',
@@ -159,16 +160,25 @@ function initData() {
   queryPageList()
 }
 
+function handleCaseStepAction() {
+  if (action.value === 'add') {
+    handleAddCaseStepAction()
+  } else if (action.value === 'edit') {
+    handleEditCaseStepAction()
+  }
+}
+
 // 添加用例
 function handleAddCaseStep () {
+  action.value = 'add'
   addDialogVisible.value = true
 }
 
 function handleAddCaseStepAction() {
-  addCaseStepForm.value.step_id = nanoid()
-  addCaseStepForm.value.case_id = localStorage.getItem('caseId')
-  console.log(addCaseStepForm)
-  addCaseStep(addCaseStepForm.value).then(res => {
+  caseStepForm.value.step_id = nanoid()
+  caseStepForm.value.case_id = localStorage.getItem('caseId')
+  console.log(caseStepForm)
+  addCaseStep(caseStepForm.value).then(res => {
     addDialogVisible.value = false
     queryCaseStepList()
   })
@@ -205,8 +215,21 @@ function handleDeleteCaseStep(row: CaseStepInfo) {
       })
 }
 
+async function handleEditCaseStep(row: CaseStepInfo) {
+  await handlePageChange(row.page_id)
+  action.value = 'edit'
+  addDialogVisible.value = true
+  caseStepForm.value = row
+}
+
+function handleEditCaseStepAction() {
+  editCaseStep(caseStepForm.value).then(res => {
+    addDialogVisible.value = false
+    queryCaseStepList()
+  })
+}
+
 async function handlePageChange(pageId: string) {
-  console.log(pageId)
   let res = await queryPageObjectList(pageId)
   poOptions.value = res.result
 }
@@ -250,7 +273,6 @@ function queryCaseStepList() {
   .handle-bar {
 
   }
-
   .case-step-table {
     height: 100%;
     background: #ffffff;
@@ -258,7 +280,6 @@ function queryCaseStepList() {
       text-align: right;
       padding: 5px;
     }
-
     .table {
 
     }
